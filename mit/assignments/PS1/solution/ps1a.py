@@ -98,8 +98,36 @@ def brute_force_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    pass
+    cows = [(key, value) for key, value in cows.items()]
+    candidates = []
+    for combination in get_partitions(cows):
+        # sanity check: check if every list is in limit
+        all_valid = True
+        for trip in combination:
+            current_trip_weight = 0
+            for cow, weight in trip:
+                current_trip_weight += weight
+            if current_trip_weight > limit:
+                all_valid = False
+                break
+
+        if all_valid:
+            candidates.append(combination)
+
+    # find the candidates with minimal trips
+    current_shortest_length, best_candidate = None, None
+    for candidate in candidates:
+        if current_shortest_length is None:
+            current_shortest_length = len(candidate)
+            best_candidate = candidate
+        elif len(candidate) < current_shortest_length:
+            current_shortest_length = len(candidate)
+            best_candidate = candidate
+
+    # print(len(best_candidate))
+    # print(best_candidate)
+    # insert only names in result
+    return [[name for name, weight in sub] for sub in best_candidate] 
         
 # Problem 4
 def compare_cow_transport_algorithms():
