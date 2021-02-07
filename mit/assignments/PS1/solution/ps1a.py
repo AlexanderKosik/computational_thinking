@@ -140,8 +140,17 @@ def compare_cow_transport_algorithms():
     Print out the number of trips returned by each method, and how long each
     method takes to run in seconds.
 
+
     Returns:
     Does not return anything.
     """
-    # TODO: Your code here
-    pass
+    d = load_cows('ps1_cow_data_2.txt')
+    start = time.time()
+    greedy_result = greedy_cow_transport(d, limit=10)
+    end = time.time()
+    print(f"Greedy Length: {len(greedy_result)}, time: {end - start:.6f}")
+
+    start = time.time()
+    brute_result = brute_force_cow_transport(d, limit=10)
+    end = time.time()
+    print(f"Brute Length: {len(brute_result)}, time: {end - start:.6f}")
