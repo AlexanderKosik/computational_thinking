@@ -5,6 +5,7 @@
 # Time:
 
 from ps1_partition import get_partitions
+from operator import itemgetter
 import time
 
 #================================
@@ -56,9 +57,24 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
     cows = [(key, value) for key, value in cows.items()]
-    return cows
+    sorted_cows = sorted(cows, key=itemgetter(1))
+    trips = []
+    while len(sorted_cows) > 0:
+        current_load = 0
+        current_trip = []
+        while current_load <= limit and len(sorted_cows):
+            cow, weight = sorted_cows[-1]
+            if current_load + weight <= limit:
+                current_load += weight
+                current_trip.append(cow)
+                sorted_cows.pop()
+            else:
+                # no space left
+                break
+        trips.append(current_trip)
+
+    return trips
 
 # Problem 3
 def brute_force_cow_transport(cows,limit=10):
