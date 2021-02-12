@@ -11,6 +11,7 @@
 
 # Problem 1
 def recursion(egg_weights, target_weight, choice, memo={}):
+    # I think we can remove this extra if
     if target_weight == 0 or (not bool(egg_weights)):
         return len(choice), choice
     elif egg_weights[-1] > target_weight:
