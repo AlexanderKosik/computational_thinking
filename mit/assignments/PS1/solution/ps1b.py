@@ -24,20 +24,16 @@ def recursion(egg_weights, target_weight, choice, memo={}):
             return len(left_choice), left_choice
         else:
             # go deeper into rabbit hole
-            left, result = recursion(egg_weights, target_weight - item, left_choice)
+            left, left_result = recursion(egg_weights, target_weight - item, left_choice)
 
         # when we only have 1 choice and already choose it (left), than we must use left
         if len(egg_weights) == 1:
-            return len(result), result
+            return len(left_result), left_result
 
         right_choice = list(choice)
-        right, result = recursion(egg_weights[:-1], target_weight, right_choice)
+        right, right_result = recursion(egg_weights[:-1], target_weight, right_choice)
 
-        if left <= right:
-            result = choice + left_choice
-        else:
-            result = choice + right_choice
-
+        result = left_result if left <= right else right_result
         return len(result), result
 
 def dp_make_weight(egg_weights, target_weight, memo={}):
@@ -47,11 +43,11 @@ def dp_make_weight(egg_weights, target_weight, memo={}):
 
 # EXAMPLE TESTING CODE, feel free to add more if you'd like
 if __name__ == '__main__':
-    # egg_weights = (1, 5, 10, 25)
-    egg_weights = (1, 2)
-    n = 3
+    egg_weights = (1, 5, 10, 25)
+    # egg_weights = (1, 2)
+    n = 99
     print(f"Egg weights = {egg_weights}")
     print(f"n = {n}")
-    # print("Expected ouput: 9 (3 * 25 + 2 * 10 + 4 * 1 = 99)")
+    print("Expected ouput: 9 (3 * 25 + 2 * 10 + 4 * 1 = 99)")
     print("Actual output:", dp_make_weight(egg_weights, n))
     print()
