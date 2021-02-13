@@ -20,6 +20,8 @@ from graph import Digraph, Node, WeightedEdge
 # represented?
 #
 # Answer:
+# Node represent the buildings with its numbers
+# WeightesEdges represent the distance between buildings
 #
 
 
@@ -43,8 +45,21 @@ def load_map(map_filename):
         a Digraph representing the map
     """
 
-    # TODO
     print("Loading map from file...")
+    g = Digraph()
+    with open(map_filename) as f:
+        for line in f:
+            src, dest, distance, outdoor = line.rstrip().split(" ")
+            src_node = Node(src)
+            dest_node = Node(dest)
+            if not g.has_node(src_node):
+                g.add_node(src_node)
+            if not g.has_node(dest_node):
+                g.add_node(dest_node)
+            we = WeightedEdge(src_node, dest_node, distance, outdoor)
+            g.add_edge(we)
+
+    return g
 
 # Problem 2c: Testing load_map
 # Include the lines used to test load_map below, but comment them out
@@ -214,6 +229,14 @@ class Ps2Test(unittest.TestCase):
 
     def test_impossible_path2(self):
         self._test_impossible_path('10', '32', total_dist=100)
+
+    def test_load_map(self):
+        g = load_map('test_load_map.txt')
+        self.assertEqual(g.has_node(Node("1")), True)
+        self.assertEqual(g.has_node(Node("2")), True)
+        self.assertEqual(g.has_node(Node("3")), True)
+        self.assertEqual(g.has_node(Node("4")), True)
+        self.assertEqual(g.has_node(Node("5")), False)
 
 
 if __name__ == "__main__":

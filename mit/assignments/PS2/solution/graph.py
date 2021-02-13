@@ -93,6 +93,8 @@ class Digraph(object):
     def add_node(self, node):
         """Adds a Node object to the Digraph. Raises a ValueError if it is
         already in the graph."""
+        if not isinstance(node, Node):
+            node = Node(node)
         if node in self.nodes:
             raise ValueError("Node already in graph")
         self.nodes.add(node)
