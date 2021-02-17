@@ -110,8 +110,30 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
         If there exists no path that satisfies max_total_dist and
         max_dist_outdoors constraints, then return None.
     """
-    # TODO
-    pass
+    shortest_distance = None
+
+    def DFS(graph, start, end, path, shortest_route, current_len, print_solution):
+        nonlocal shortest_distance
+        path = path + [str(start)]
+        if print_solution:
+            print(f"Current path: {path}")
+        if start == end:  # check if we have reached the destination
+            shortest_distance = current_len
+            if print_solution:
+                print(f"Shortest path found: {path} (len: {current_len})")
+            return path
+
+        edges = graph.get_edges_for_node(start)
+        for edge in edges:
+            destination = edge.get_destination()
+            if destination not in path:  # no cycles
+                distance = int(edge.get_total_distance())
+                if shortest_route is None or (shortest_distance is not None and current_len + distance < shortest_distance):
+                    new_path = DFS(graph, destination, end, path, shortest_route, current_len + distance, print_solution)
+                    shortest_route = new_path
+        return shortest_route
+
+    return DFS(digraph, start, end, [], None, 0, False), shortest_distance
 
 
 # Problem 3c: Implement directed_dfs
@@ -143,8 +165,42 @@ def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
         If there exists no path that satisfies max_total_dist and
         max_dist_outdoors constraints, then raises a ValueError.
     """
-    # TODO
-    pass
+    shortest_distance = None
+
+    def DFS_max(graph, start, end, path, shortest_route, current_len, outdoor_len, print_solution):
+        nonlocal shortest_distance
+
+        # check if global maximuma exceeded
+        if current_len > max_total_dist or outdoor_len > max_dist_outdoors:
+            return None
+
+        path = path + [start]
+        if print_solution:
+            print(f"Current path: {path}")
+        if start == end:  # check if we have reached the destination
+            shortest_distance = current_len
+            if print_solution:
+                print(f"Shortest path found: {path} (len: {current_len})")
+            return path
+
+        edges = graph.get_edges_for_node(start)
+        for edge in edges:
+            destination = edge.get_destination()
+            if destination not in path:  # no cycles
+                distance = int(edge.get_total_distance())
+                curr_distance_outdoor = int(edge.get_outdoor_distance())
+                if shortest_route is None or (shortest_distance is not None and current_len + distance < shortest_distance):
+                    new_path = DFS_max(graph, destination, end, path, shortest_route, current_len + distance, outdoor_len + curr_distance_outdoor, print_solution)
+                    if new_path is not None:
+                        shortest_route = new_path
+        return shortest_route
+
+    shortest_path = DFS_max(digraph, Node(start), Node(end), [], None, 0, 0, False)
+    if shortest_path is None:
+        raise ValueError()
+    if shortest_distance is None:
+        shortest_distance = 0
+    return [str(x) for x in shortest_path]
 
 
 # ================================================================
