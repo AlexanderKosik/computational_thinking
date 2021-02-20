@@ -11,7 +11,7 @@ import ps3_visualize
 import pylab
 
 # For python 2.7:
-# from ps3_verify_movement27 import test_robot_movement
+from ps3_verify_movement27 import test_robot_movement
 
 
 # === Provided class Position
@@ -373,7 +373,7 @@ class StandardRobot(Robot):
     A StandardRobot is a Robot with the standard movement strategy.
 
     At each time-step, a StandardRobot attempts to move in its current
-    direction; when it would hit a wall or furtniture, it *instead*
+    direction; when it would hit a wall or furniture, it *instead*
     chooses a new direction randomly.
     """
     def update_position_and_clean(self):
@@ -384,11 +384,16 @@ class StandardRobot(Robot):
         rotate once to a random new direction, and stay stationary) and clean the dirt on the tile
         by its given capacity. 
         """
-        raise NotImplementedError
+        new_position = self.position.get_new_position(self.direction, self.speed)
+        if self.room.is_position_valid(new_position):
+            self.position = new_position
+            self.room.clean_tile_at_position(self.position, self.capacity)
+        else:
+            self.direction = float(random.randint(0, 359))
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-#test_robot_movement(StandardRobot, EmptyRoom)
-#test_robot_movement(StandardRobot, FurnishedRoom)
+test_robot_movement(StandardRobot, EmptyRoom)
+# test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
 class FaultyRobot(Robot):
