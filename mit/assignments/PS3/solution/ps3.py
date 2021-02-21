@@ -396,7 +396,9 @@ class StandardRobot(Robot):
 # test_robot_movement(StandardRobot, FurnishedRoom)
 
 class MegaRobot(StandardRobot):
-        pass
+    def __init__(self, room, speed, capacity):
+        StandardRobot.__init__(self, room, capacity, 30)
+
 
 # === Problem 4
 class FaultyRobot(Robot):
@@ -475,9 +477,6 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     for i in range(num_trials):
         room = EmptyRoom(int(width), int(height), dirt_amount)
         robots = [robot_type(room, speed, capacity) for _ in range(num_robots)]
-        for robot in robots:
-            if isinstance(robot, MegaRobot):
-                robot.capacity = 30
 
         coverage = 0
         time_steps = 0
