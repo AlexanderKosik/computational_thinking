@@ -395,6 +395,9 @@ class StandardRobot(Robot):
 # test_robot_movement(StandardRobot, EmptyRoom)
 # test_robot_movement(StandardRobot, FurnishedRoom)
 
+class MegaRobot(StandardRobot):
+        pass
+
 # === Problem 4
 class FaultyRobot(Robot):
     """
@@ -444,7 +447,7 @@ class FaultyRobot(Robot):
                 self.direction = float(random.randint(0, 359))
 
 
-test_robot_movement(FaultyRobot, EmptyRoom)
+# test_robot_movement(FaultyRobot, EmptyRoom)
 
 # === Problem 5
 def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_coverage, num_trials,
@@ -468,12 +471,29 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 FaultyRobot)
     """
-    raise NotImplementedError
+    averages = []
+    for i in range(num_trials):
+        room = EmptyRoom(int(width), int(height), dirt_amount)
+        robots = [robot_type(room, speed, capacity) for _ in range(num_robots)]
+        for robot in robots:
+            if isinstance(robot, MegaRobot):
+                robot.capacity = 30
 
+        coverage = 0
+        time_steps = 0
+        while coverage < min_coverage:
+            time_steps += 1
+            for robot in robots:
+                robot.update_position_and_clean()
+                coverage = float(room.get_num_cleaned_tiles()) / room.get_num_tiles()
+        averages.append(time_steps)
+    return sum(averages)/len(averages)
 
 # print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
+# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, FaultyRobot)))
 # print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
 # print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
+# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, FaultyRobot)))
 # print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
 # print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
 
@@ -490,6 +510,29 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
 #       10x30, 20x15, 25x12, and 50x6?
 #
 #
+
+def show_plot_clean_percentages():
+    num_robot_range = range(1, 22, 5)
+    times1 = []
+    times2 = []
+    times3 = []
+    times4 = []
+    for num_robots in num_robot_range:
+        print ("Plotting", num_robots, "robots...")
+        times1.append(run_simulation(num_robots, 1.0, 1, 10, 10, 30, 0.8, 20, StandardRobot))
+        times2.append(run_simulation(num_robots, 1.0, 1, 10, 10, 30, 1.0, 20, StandardRobot))
+        times3.append(run_simulation(num_robots, 1.0, 1, 10, 10, 30, 1.0, 20, MegaRobot))
+        # times3.append(run_simulation(num_robots, 1.0, 1, 10, 10, 3, 0.8, 20, FaultyRobot))
+        # times4.append(run_simulation(num_robots, 1.0, 1, 10, 10, 3, 1.0, 20, FaultyRobot))
+    pylab.plot(num_robot_range, times1)
+    pylab.plot(num_robot_range, times2)
+    pylab.plot(num_robot_range, times3)
+    # pylab.plot(num_robot_range, times4)
+    pylab.title("80 percent compared to 100 percent")
+    pylab.legend(('80 Percent Standard', '100 Percent Standard', 'Mega Roboter', '100 Percent Faulty'))
+    pylab.xlabel("robots")
+    pylab.ylabel("steps")
+    pylab.show()
 
 def show_plot_compare_strategies(title, x_label, y_label):
     """
@@ -533,5 +576,6 @@ def show_plot_room_shape(title, x_label, y_label):
     pylab.show()
 
 
-#show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
-#show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
+show_plot_clean_percentages()
+# show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
+# show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
