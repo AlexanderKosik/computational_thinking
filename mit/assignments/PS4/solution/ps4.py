@@ -194,7 +194,7 @@ class Patient(object):
         self.bacteria = surviving_bacteria_pop
         for bac in surviving_bacteria_pop:
             with suppress(NoChildException):
-                self.bacteria.append(bac.reproduction(density))
+                self.bacteria.append(bac.reproduce(density))
 
         return self.get_total_pop()
 
@@ -214,7 +214,9 @@ def calc_pop_avg(populations, n):
     Returns:
         float: The average bacteria population size at time step n
     """
-    pass  # TODO
+    bacteria_at_time_n = [pop[n] for pop in populations]
+    return sum(bacteria_at_time_n)/len(bacteria_at_time_n)
+
 
 
 def simulation_without_antibiotic(num_bacteria,
@@ -250,11 +252,28 @@ def simulation_without_antibiotic(num_bacteria,
         populations (list of lists or 2D array): populations[i][j] is the
             number of bacteria in trial i at time step j
     """
-    pass  # TODO
+    timesteps = 300
+    result = []
+    for i in range(num_trials):
+        # initial bacteria population
+        bacterias = [SimpleBacteria(birth_prob, death_prob) for _ in range(num_bacteria)]
+        p = Patient(bacterias, max_pop)
+        bacteria_population = [num_bacteria]
+        for j in range(1, timesteps):
+            bacteria_population.append(p.update())
+        result.append(bacteria_population)
+
+    # do the plotting
+    y_coords = [calc_pop_avg(result, x) for x in range(timesteps)]
+    x_coords = list(range(timesteps))
+    make_one_curve_plot(x_coords, y_coords, "timesteps", "population size", "Average Bacteria Population w/o antibiotic")
+
+    return result
 
 
 # When you are ready to run the simulation, uncomment the next line
 # populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 50)
+populations = simulation_without_antibiotic(100, 1000, 0.1, 0.025, 10)
 
 ##########################
 # PROBLEM 3
