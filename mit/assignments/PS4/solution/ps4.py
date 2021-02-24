@@ -333,7 +333,11 @@ def calc_95_ci(populations, t):
 
         I.e., you should return a tuple containing (mean, width)
     """
-    pass  # TODO
+    avg = calc_pop_avg(populations, t)
+    sigma = calc_pop_std(populations, t)
+    n = len([pop[t] for pop in populations])
+    SEM = sigma/n**0.5
+    return avg, 1.95*SEM
 
 
 ##########################
